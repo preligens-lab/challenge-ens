@@ -2,6 +2,7 @@ name: challenge-ens
 channels:
   - defaults
   - conda-forge
+  - hcc
 dependencies:
   - python=3.7
   - pillow=8.0.1
@@ -11,11 +12,11 @@ dependencies:
   - pandas=1.1.3
   - jupyter=1.0.0
   - tifffile=2020.11.18
-  - gdal=2.3.3
-  - rasterio=1.0.21
   - tqdm=4.51.0
-  - pylibtiff=0.4.2
-  - tensorflow=2.3.0 # Note: install tensorflow-gpu if you need a CUDA-compatible version, not tensorflow
-  - imgaug=0.4.0
-  - albumentations=0.5.1
-prefix: /home/jules/miniconda3/envs/challenge-ens
+  # - pylibtiff=0.4.2
+  - tensorflow=2.2.0 # Note: install tensorflow-gpu if you need a CUDA-compatible version, not tensorflow
+  - tensorflow-addons=0.11.2
+  # - imgaug=0.4.0
+  # - albumentations=0.5.1
+
+prefix: /home/sid/miniconda3/envs/challenge-ens
