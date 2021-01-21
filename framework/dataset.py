@@ -82,7 +82,8 @@ class LandCoverData():
         assert len(train_images_paths) == self.TRAINSET_SIZE
         assert len(test_images_paths) == self.TESTSET_SIZE
 
-    def show_image(self, image, display_min=50, display_max=400, ax=None):
+    @classmethod
+    def show_image(cls, image, display_min=50, display_max=400, ax=None):
         """Show an image.
         Args:
             image (numpy.array): the image. If the image is 16-bit, apply bytescaling to convert to 8-bit
@@ -100,37 +101,37 @@ class LandCoverData():
         im = ax.imshow(image)
         return im
 
-    def show_mask(self, mask, ax=None, add_legend=True):
+    @classmethod
+    def show_mask(cls, mask, ax=None, add_legend=True):
         """Show a a segmentation mask."""
         show_mask = np.empty((*mask.shape, 3))
-        for c, color in self.CLASSES_COLORPALETTE.items():
-            show_mask[mask == c, :] = color / 255.
+        for c, color in cls.CLASSES_COLORPALETTE.items():
+            show_mask[mask == c, :] = color/255.
         if ax is None:
-            fig, ax = plt.subplots(figsizee=(10, 10))
+            fig, ax = plt.subplots(figsize=(10, 10))
         ax.axis("off")
         im = ax.imshow(show_mask)
         if add_legend:
             # show legend mapping pixel colors to class names
             import matplotlib.patches as mpatches
             handles = []
-            for c in self.CLASSES_COLORPALETTE:
-                handles.append(mpatches.Patch(color=self.CLASSES_COLORPALETTE[c] / 255., label=self.CLASSES_COLORPALETTE[c]))
-
+            for c, color in cls.CLASSES_COLORPALETTE.items():
+                handles.append(mpatches.Patch(color=color/255., label=cls.CLASSES_DICT[c]))
             ax.legend(handles=handles)
         return im
 
-
-    def compute_class_counts(self, set='train'):
+    @classmethod
+    def compute_class_counts(cls, set='train'):
         """Return the cumulated class counts for all masks in the training set."""
         assert set in ('train', 'test')
         if set == 'train':
-            masks_paths = getattr(self, f'{set}_masks_paths')
+            masks_paths = getattr(cls, f'{set}_masks_paths')
 
-        cumhist = np.zeros((self.N_CLASSES,), dtype=np.int64)
+        cumhist = np.zeros((cls.N_CLASSES,), dtype=np.int64)
         for path in tqdm(masks_paths):
             with TiffFile(path) as tif:
                 arr = tif.asarray()
-                hist, _ = np.histogram(arr, bins=self.N_CLASSES, range=(0, 10)) # @todo: use bincount
+                hist, _ = np.histogram(arr, bins=cls.N_CLASSES, range=(0, 10)) # @todo: use bincount
                 cumhist += hist
         return cumhist
 
