@@ -2,15 +2,26 @@
 
 
 TrainingConfig:
+  # the size of each batch of images when training
+  # careful not to use a too large batch size, might lead to OOM errors
   batch_size: 32
+  # the number of epochs to train for
   epochs: 200
+  # the learning rate
   lr: 0.001
+  # the path to the root directory of the dataset
   dataset_folder: '~/challenge-ens/data/v1_dataset'
+  # the path to the root directory used to store experiments
+  # a directory per experiment will be created named with the datetime during execution
   xp_rootdir: '~/challenge-ens/code/experiments'
 
 
 InferenceConfig:
+  # the size of each batch of images when performing prediction
   batch_size: 32
+  # the epoch number for the model checkpoint to load and perform prediction with
   checkpoint_epoch: 84
+  # the path to the root folder of the dataset
   dataset_folder: '~/challenge-ens/data/v1_dataset'
+  # the path to the root directory used to store experiments
   xp_rootdir: '~/challenge-ens/code/experiments'
