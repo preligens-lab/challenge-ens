@@ -20,11 +20,11 @@ class LandCoverData():
     """Class to represent the S2GLC Land Cover Dataset for the challenge, with useful
     metadata and statistics.
     """
-    # Image size of the images and label masks
+    # image size of the images and label masks
     IMG_SIZE = 256
-    # The images are RGB+NIR (4 channels)
+    # the images are RGB+NIR (4 channels)
     N_CHANNELS = 4
-    # We have 9 classes + a 'no_data' class for pixels with no labels (absent in the dataset)
+    # we have 9 classes + a 'no_data' class for pixels with no labels (absent in the dataset)
     N_CLASSES = 10
     CLASSES_DICT = OrderedDict({
         0: 'no_data',
@@ -38,9 +38,9 @@ class LandCoverData():
         8: 'snow',
         9: 'water',
     })
-    # classes to ignore because they make not relevant. "no_data" refers to pixels without
-    # a proper class, but it is absent in the dataset; "clouds" class is not relevant it
-    # is temporary and is is not a proper land cover type
+    # classes to ignore because they are not relevant. "no_data" refers to pixels without
+    # a proper class, but it is absent in the dataset; "clouds" class is not relevant, it
+    # is not a proper land cover type and images and masks do not exactly match in time.
     IGNORED_CLASSES = ['no_data', 'clouds']
 
     # The training dataset contains 18491 images and masks
@@ -63,12 +63,12 @@ class LandCoverData():
         }
     CLASSES_COLORPALETTE = {c: np.asarray(color) for (c, color) in CLASSES_COLORPALETTE.items()}
 
-    # Statistics
-    # The pixel class counts in the training set
+    # statistics
+    # the pixel class counts in the training set
     TRAIN_CLASS_COUNTS = np.array(
         [0, 20643, 60971025, 404760981, 277012377, 96473046, 333407133, 9775295, 1071, 29404605]
     )
-    # The minimum and maximum value of image pixels in the training sets
+    # the minimum and maximum value of image pixels in the training sets
     TRAIN_PIXELS_MIN = 1
     TRAIN_PIXELS_MAX = 24356
 
