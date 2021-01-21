@@ -5,7 +5,6 @@ TrainingConfig:
   batch_size: 32
   epochs: 200
   lr: 0.001
-  use_data_augmentations: true
   dataset_folder: '~/challenge-ens/data/v1_dataset'
   xp_rootdir: '~/challenge-ens/code/experiments'
 
