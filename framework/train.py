@@ -1,3 +1,6 @@
+"""
+Train the model.
+"""
 from pathlib import Path
 import datetime
 import argparse

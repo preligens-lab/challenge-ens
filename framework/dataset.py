@@ -1,3 +1,6 @@
+"""
+Classes and functions to handle data
+"""
 from pathlib import Path
 from collections import OrderedDict
 from dataclasses import dataclass

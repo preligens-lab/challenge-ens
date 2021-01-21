@@ -1,3 +1,6 @@
+"""
+Predict the targets using a trained model.
+"""
 from pathlib import Path
 import argparse
 import yaml
