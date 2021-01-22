@@ -85,8 +85,9 @@ def UNet(input_shape,
          num_classes=10,
          output_activation='softmax',
          num_layers=4):
-    """Creates a U-Net model (Ronneberger et al 2015)
-    @ TODO: docstring
+    """
+    Creates a U-Net model (Ronneberger et al 2015)
+    Architecture adapted from github.com/karolzak/keras-unet/master/keras_unet/models/satellite_unet.py
     """
 
     def bn_conv_relu(input, filters, **conv2d_kwargs):
@@ -101,9 +102,9 @@ def UNet(input_shape,
 
     inputs = kl.Input(input_shape)
 
-    # number of filters in a convolution in the contrastive path: constant
+    # number of filters in a convolution in the contrastive path (constant)
     filters = 64
-    # number of filters in a convolution in the dilative path: constant
+    # number of filters in a convolution in the dilative path (constant)
     upconv_filters = 96
 
     kernel_size = (3,3)

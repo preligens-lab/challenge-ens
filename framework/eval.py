@@ -1,5 +1,3 @@
-# """
-# The metric of the challenge, the Kullback-Leibler divergence between two discrete distributions.
 """
 Evaluate the model prediction.
 """

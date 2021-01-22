@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from tifffile import TiffFile
 import tensorflow as tf
 
+
 def display_sample(display_list):
     """Visualize side-by-side an input image, the ground-truth mask and the prediction mask
     Args:
@@ -34,14 +35,12 @@ def create_mask(pred_raster: tf.Tensor) -> tf.Tensor:
 
 def plot_predictions(model, dataset=None, sample_batch=None, num=1, save_filepaths=None):
     """Show a sample prediction.
-    @ TOTEST
-    @ TODO: docstring
-    Parameters
-    ----------
-    dataset : [type], optional
-        [Input dataset, by default None
-    num : int, optional
-        Number of sample to show, by default 1
+    Args:
+        dataset (tf.data.Dataset, optional): dataset to take samples from
+        sample_batch (tf.Tensor, optional): a minibatch of data to plot
+        num (int): number of samples to show, default: 1
+        save_filepaths (list[path-like]): list of paths to files where to save plots for
+            every sample
     """
     if save_filepaths is not None:
         assert isinstance(save_filepaths, list) and len(save_filepaths) == num

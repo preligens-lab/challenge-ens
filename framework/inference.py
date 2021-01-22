@@ -75,14 +75,10 @@ def predict_as_vectors(model, dataset, save_to=None):
         counts = bincount_along_axis(
             tf.reshape(pred_mask, (batch_size, -1)), minlength=num_classes, axis=-1
         )
-        # @TODO: remove classes 0 and 1 from vectors ? ("no_data" and "clouds")
         predictions.append(counts / tf.math.reduce_sum(counts, -1, keepdims=True))
 
     predictions = tf.concat(predictions, 0)
     return predictions.numpy()
-
-    # compute metric
-    # @TODO
 
 
 def _parse_args():
