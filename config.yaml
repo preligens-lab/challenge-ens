@@ -1,7 +1,9 @@
 ---
+#
+# YAML configuration file for train.py and infer.py
+#
 
-
-TrainingConfig:
+training_config:
   # the size of each batch of images when training
   # careful not to use a too large batch size, might lead to OOM errors
   batch_size: 32
@@ -16,7 +18,7 @@ TrainingConfig:
   xp_rootdir: '~/challenge-ens/code/experiments'
 
 
-InferenceConfig:
+inference_config:
   # the size of each batch of images when performing prediction
   batch_size: 32
   # the epoch number for the model checkpoint to load and perform prediction with
