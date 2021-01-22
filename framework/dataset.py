@@ -72,16 +72,6 @@ class LandCoverData():
     TRAIN_PIXELS_MIN = 1
     TRAIN_PIXELS_MAX = 24356
 
-    def __init__(self, dataset_folder):
-        dataset_folder = Path(dataset_folder)
-        assert dataset_folder.is_dir()
-        self.train_images_paths = sorted(list(dataset_folder.glob('train/images/*.tif')))
-        self.train_masks_paths = sorted(list(dataset_folder.glob('train/masks/*.tif')))
-        self.test_images_paths = sorted(list(dataset_folder.glob('test/images/*.tif')))
-        self.test_masks_paths = sorted(list(dataset_folder.glob('test/masks/*.tif')))
-        assert len(self.train_images_paths) == self.TRAINSET_SIZE
-        assert len(self.test_images_paths) == self.TESTSET_SIZE
-
 
 def numpy_parse_image(image_path):
     """Load an image and its segmentation mask as numpy arrays and returning a tuple
