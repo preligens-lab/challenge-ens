@@ -99,9 +99,9 @@ if __name__ == '__main__':
         .prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 
     # compute class weights for the loss: inverse-frequency balanced
-    # Note: we set to 0 the weights for the classes "no_data" (0) and "clouds" (1) to ignore these
-    class_weight = np.zeros((LCD.N_CLASSES,))
-    class_weight[2:] = (1 / LCD.TRAIN_CLASS_COUNTS[2:])* LCD.TRAIN_CLASS_COUNTS[2:].sum() / (LCD.N_CLASSES-2)
+    # note: we set to 0 the weights for the classes "no_data"(0) and "clouds"(1) to ignore these
+    class_weight = (1 / LCD.TRAIN_CLASS_COUNTS[2:])* LCD.TRAIN_CLASS_COUNTS[2:].sum() / (LCD.N_CLASSES-2)
+    class_weight[LCD.IGNORED_CLASSES_IDX] = 0.
     print(f"Will use class weights: {class_weight}")
 
     # where to write files for this experiments
