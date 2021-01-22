@@ -32,30 +32,22 @@ def UNet(input_shape,
     # number of filters in a convolution in the dilative path (constant)
     upconv_filters = 96
 
-    kernel_size = (3,3)
-    strides = (1,1)
-    padding = 'same'
-    kernel_initializer = 'he_normal'
     conv2d_kwargs = {
-        'kernel_size': kernel_size,
-        'strides': strides,
-        'padding': padding,
-        'kernel_initializer': kernel_initializer
+        'kernel_size': (3,3),
+        'strides': (1,1),
+        'padding': 'same',
+        'kernel_initializer': 'he_normal'
     }
     conv2d_transpose_kwargs = {
-        'kernel_size': kernel_size,
+        'kernel_size': (3,3),
         'strides': (2,2),
-        'padding': padding,
+        'padding': 'same',
         'output_padding': (1,1)
     }
-
-    pool_size = (2,2)
-    pool_strides = (2,2)
-    pool_padding = 'valid'
     maxpool2d_kwargs = {
-        'pool_size': pool_size,
-        'strides': pool_strides,
-        'padding': pool_padding,
+        'pool_size': (2,2),
+        'strides': (2,2),
+        'padding': 'valid',
     }
 
     x = kl.Conv2D(filters, activation='relu', **conv2d_kwargs)(inputs)
@@ -93,18 +85,13 @@ def UNet(input_shape,
 
 
 if __name__ == '__main__':
-
-    unet_kwargs = dict(input_shape=(256, 256, 4), num_classes=10, output_activation='softmax')
-    print("Creating U-Net Yann Leguilly with arguments: {unet_kwargs}")
-    model = UNetYannLeguilly(**unet_kwargs)
-    print("Summary:")
-    print(model.summary())
-
-    input_batch = tf.random.normal((1, 256, 256, 4), name='random_normal_input')
-    output = model(input_batch)
-    print(output.shape)
-
-    unet_kwargs = dict(input_shape=(256, 256, 4), num_classes=10, output_activation='softmax', num_layers=2)
+    # Test
+    unet_kwargs = dict(
+        input_shape=(256, 256, 4),
+        num_classes=10,
+        output_activation='softmax',
+        num_layers=2
+    )
     print(f"Creating U-Net with arguments: {unet_kwargs}")
     model = UNet(**unet_kwargs)
     print("Summary:")
