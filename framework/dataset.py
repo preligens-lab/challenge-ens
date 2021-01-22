@@ -3,12 +3,8 @@ Classes and functions to handle data
 """
 from pathlib import Path
 from collections import OrderedDict
-from dataclasses import dataclass
 import numpy as np
-import pandas as pd
 from tifffile import TiffFile
-import matplotlib.pyplot as plt
-from tqdm import tqdm
 
 import tensorflow as tf
 # import tensorflow_io as tfio
