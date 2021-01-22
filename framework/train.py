@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
     DATASET_FOLDER = Path(config.dataset_folder).expanduser()
     assert DATASET_FOLDER.exists()
-    print('Instanciate train and test datasets')
+    print('Instanciate train and validation datasets')
     train_files = list(config.dataset_folder.glob('train/imgs/*.tif'))
     # shuffle list of training samples files
     train_files = random.sample(train_files, len(train_files))
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     (xp_dir/'plots').mkdir()
     (xp_dir/'checkpoints').mkdir()
 
-    # keep a training mini-batch for visualization
+    # keep a training minibatch for visualization
     for image, mask in train_dataset.take(1):
         sample_batch = (image[:5, ...], mask[:5, ...])
 
@@ -123,7 +123,6 @@ if __name__ == '__main__':
         # tf.keras.callbacks.EarlyStopping(patience=10, verbose=1),
         tf.keras.callbacks.ModelCheckpoint(
             filepath=xp_dir/'checkpoints/epoch{epoch}', save_best_only=False, verbose=1
-                    #xp_dir/'checkpoints/weights.{epoch:02d}-{val_loss:.2f}.hdf5'
         ),
         tf.keras.callbacks.CSVLogger(
             filename=(xp_dir/'fit_logs.csv')
@@ -151,9 +150,9 @@ if __name__ == '__main__':
     model.compile(optimizer=optimizer,
                   loss=loss,
                   metrics=[])
-                  # [tf.keras.metrics.Precision(),
-                  #          tf.keras.metrics.Recall(),
-                  #          tf.keras.metrics.MeanIoU(num_classes=LCD.N_CLASSES)]) # @TODO metrics
+                  # metrics = [tf.keras.metrics.Precision(),
+                  #            tf.keras.metrics.Recall(),
+                  #            tf.keras.metrics.MeanIoU(num_classes=LCD.N_CLASSES)]) # TODO segmentation metrics
 
     # Launch training
     model_history = model.fit(train_dataset, epochs=config.epochs,
