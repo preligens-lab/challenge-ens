@@ -9,12 +9,10 @@ from tifffile import TiffFile
 import tensorflow as tf
 # import tensorflow_io as tfio
 
-# random seed for reproducibility
-SEED = 42
 
 class LandCoverData():
-    """Class to represent the S2GLC Land Cover Dataset for the challenge, with useful
-    metadata and statistics.
+    """Class to represent the S2GLC Land Cover Dataset for the challenge,
+    with useful metadata and statistics.
     """
     # image size of the images and label masks
     IMG_SIZE = 256
@@ -22,29 +20,29 @@ class LandCoverData():
     N_CHANNELS = 4
     # we have 9 classes + a 'no_data' class for pixels with no labels (absent in the dataset)
     N_CLASSES = 10
-    CLASSES_DICT = OrderedDict({
-        0: 'no_data',
-        1: 'clouds',
-        2: 'artificial',
-        3: 'cultivated',
-        4: 'broadleaf',
-        5: 'coniferous',
-        6: 'herbaceous',
-        7: 'natural',
-        8: 'snow',
-        9: 'water',
-    })
+    CLASSES = [
+        'no_data',
+        'clouds',
+        'artificial',
+        'cultivated',
+        'broadleaf',
+        'coniferous',
+        'herbaceous',
+        'natural',
+        'snow',
+        'water'
+    ]
     # classes to ignore because they are not relevant. "no_data" refers to pixels without
     # a proper class, but it is absent in the dataset; "clouds" class is not relevant, it
     # is not a proper land cover type and images and masks do not exactly match in time.
-    IGNORED_CLASSES = ['no_data', 'clouds']
+    IGNORED_CLASSES_IDX = [0, 1]
 
     # The training dataset contains 18491 images and masks
     # The test dataset contains 5043 images and masks
     TRAINSET_SIZE = 18491
     TESTSET_SIZE = 5043
 
-    # for visualization of the masks: color palette to use
+    # for visualization of the masks: classes indices and RGB colors
     CLASSES_COLORPALETTE = {
         0: [0,0,0],
         1: [255,25,236],
@@ -64,7 +62,7 @@ class LandCoverData():
     TRAIN_CLASS_COUNTS = np.array(
         [0, 20643, 60971025, 404760981, 277012377, 96473046, 333407133, 9775295, 1071, 29404605]
     )
-    # the minimum and maximum value of image pixels in the training sets
+    # the minimum and maximum value of image pixels in the training set
     TRAIN_PIXELS_MIN = 1
     TRAIN_PIXELS_MAX = 24356
 
@@ -87,6 +85,7 @@ def numpy_parse_image(image_path):
         mask = mask[..., None]
     return image, mask
 
+
 @tf.function(input_signature=[tf.TensorSpec(None, tf.string)])
 def parse_image(image_path):
     """Wraps the parse_image function as a TF function"""
@@ -101,6 +100,7 @@ def normalize(input_image, input_mask):
     """Rescale the pixel values of the images between 0.0 and 1.0"""
     image = tf.cast(input_image, tf.float32) / LandCoverData.TRAIN_PIXELS_MAX
     return image, input_mask
+
 
 @tf.function
 def load_image_train(input_image, input_mask):
