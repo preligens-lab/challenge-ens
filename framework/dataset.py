@@ -133,39 +133,3 @@ def load_image_test(input_image, input_mask):
     """Normalize test image and its label mask."""
     image, mask = normalize(input_image, input_mask)
     return image, mask
-
-if __name__ == '__main__':
-    import multiprocessing
-    N_CPUS = multiprocessing.cpu_count()
-
-    DATA_FOLDER_STR = '~/challenge-ens/data'
-    DATA_FOLDER = Path(DATA_FOLDER_STR).expanduser()
-    dataset_folder = DATA_FOLDER/'v1_dataset'
-
-    train_images_paths = sorted(list(dataset_folder.glob('train/imgs/*.tif')))
-    test_images_paths = sorted(list(dataset_folder.glob('test/imgs/*.tif')))
-    assert len(train_images_paths) == LandCoverData.TRAINSET_SIZE
-    assert len(test_images_paths) == LandCoverData.TESTSET_SIZE
-
-    train_dataset = tf.data.Dataset.list_files(str(dataset_folder/'train/imgs/*.tif'), seed=SEED)\
-        .map(parse_image, num_parallel_calls=N_CPUS)
-    test_dataset = tf.data.Dataset.list_files(str(dataset_folder/'test/imgs/*.tif'), seed=SEED)\
-        .map(parse_image, num_parallel_calls=N_CPUS)
-    # Test loading of data into tensors
-    for (image, mask) in train_dataset.take(5):
-        print({'image': image, 'mask': mask})
-
-    BATCH_SIZE = 32
-    SHUFFLE_BUFFER_SIZE = 1000
-    # datasets = {'train': train_dataset, 'test': test_dataset}
-
-    train_dataset = train_dataset.map(load_image_train, num_parallel_calls=N_CPUS)\
-        .shuffle(buffer_size=SHUFFLE_BUFFER_SIZE, seed=SEED)\
-        .repeat()\
-        .batch(BATCH_SIZE)\
-        .prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
-
-    test_dataset = test_dataset.map(load_image_test)\
-        .repeat()\
-        .batch(BATCH_SIZE)\
-        .prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
