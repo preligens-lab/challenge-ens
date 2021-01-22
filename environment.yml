@@ -13,10 +13,7 @@ dependencies:
   - jupyter=1.0.0
   - tifffile=2020.11.18
   - tqdm=4.51.0
-  # - pylibtiff=0.4.2
-  - tensorflow=2.2.0 # Note: install tensorflow-gpu if you need a CUDA-compatible version, not tensorflow
+  - tensorflow=2.2.0 # Note: replace with 'tensorflow-gpu=2.2.0' if you need a CUDA-compatible version
   - tensorflow-addons=0.11.2
-  # - imgaug=0.4.0
-  # - albumentations=0.5.1
 
 prefix: /home/sid/miniconda3/envs/challenge-ens
