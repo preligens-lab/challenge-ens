@@ -7,6 +7,7 @@ import argparse
 import yaml
 import random
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 
 from framework.dataset import LandCoverData as LCD
@@ -59,6 +60,10 @@ def _parse_args():
     assert config.xp_rootdir.is_dir()
     config.dataset_folder = Path(config.dataset_folder).expanduser()
     assert config.dataset_folder.is_dir()
+    if config.val_samples_csv is not None:
+        config.val_samples_csv = Path(config.val_samples_csv).expanduser()
+        assert config.val_samples_csv.is_file()
+
     return config
 
 if __name__ == '__main__':
@@ -66,21 +71,34 @@ if __name__ == '__main__':
     import multiprocessing
 
     config = _parse_args()
-    print(config)
+    print(f'Config:\n{config}')
+    # set random seed for reproducibility
+    if config.seed is not None:
+        random.seed(config.seed)
+        np.random.seed(config.seed)
+        tf.random.set_seed(config.seed)
 
     N_CPUS = multiprocessing.cpu_count()
 
-    DATASET_FOLDER = Path(config.dataset_folder).expanduser()
-    assert DATASET_FOLDER.exists()
     print('Instanciate train and validation datasets')
     train_files = list(config.dataset_folder.glob('train/imgs/*.tif'))
     # shuffle list of training samples files
     train_files = random.sample(train_files, len(train_files))
-    # hold-out a validation set from the training set
-
-    valset_size = int(len(train_files) * 0.1)
-    trainset_size = len(train_files) - valset_size
-    train_files, val_files = train_files[valset_size:], train_files[:valset_size]
+    devset_size = len(train_files)
+    # validation set
+    if config.val_samples_csv is not None:
+        # read the validation samples
+        val_samples_s = pd.read_csv(config.val_samples_csv, squeeze=True)
+        val_files = [config.dataset_folder/'train/images/{}.tif'.format(i) for i in val_samples_s]
+        train_files = [f for f in train_files if f not in set(val_files)]
+        valset_size = len(val_files)
+        trainset_size = len(train_files)
+        assert valset_size + trainset_size == devset_size
+    else:
+        # generate a hold-out validation set from the training set
+        valset_size = int(len(train_files) * 0.1)
+        train_files, val_files = train_files[valset_size:], train_files[:valset_size]
+        trainset_size = len(train_files) - valset_size
 
     train_dataset = tf.data.Dataset.from_tensor_slices(list(map(str, train_files)))\
         .map(parse_image, num_parallel_calls=N_CPUS)
@@ -109,6 +127,11 @@ if __name__ == '__main__':
     (xp_dir/'tensorboard').mkdir(parents=True)
     (xp_dir/'plots').mkdir()
     (xp_dir/'checkpoints').mkdir()
+    # save the validation samples to a CSV
+    val_samples_s = pd.Series([int(f.stem) for f in val_files], name='sample_id', dtype='uint32')
+    val_samples_s.to_csv(xp_dir/'val_samples.csv', index=False)
+
+    assert False
 
     # keep a training minibatch for visualization
     for image, mask in train_dataset.take(1):
