@@ -116,12 +116,6 @@ if __name__ == '__main__':
         .batch(config.batch_size)\
         .prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 
-    # compute class weights for the loss: inverse-frequency balanced
-    # note: we set to 0 the weights for the classes "no_data"(0) and "clouds"(1) to ignore these
-    class_weight = (1 / LCD.TRAIN_CLASS_COUNTS[2:])* LCD.TRAIN_CLASS_COUNTS[2:].sum() / (LCD.N_CLASSES-2)
-    class_weight[LCD.IGNORED_CLASSES_IDX] = 0.
-    print(f"Will use class weights: {class_weight}")
-
     # where to write files for this experiments
     xp_dir = config.xp_rootdir / datetime.datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
     (xp_dir/'tensorboard').mkdir(parents=True)
@@ -168,6 +162,13 @@ if __name__ == '__main__':
 
     # get optimizer, loss, and compile model for training
     optimizer = tf.keras.optimizers.Adam(lr=config.lr)
+
+    # compute class weights for the loss: inverse-frequency balanced
+    # note: we set to 0 the weights for the classes "no_data"(0) and "clouds"(1) to ignore these
+    class_weight = (1 / LCD.TRAIN_CLASS_COUNTS[2:])* LCD.TRAIN_CLASS_COUNTS[2:].sum() / (LCD.N_CLASSES-2)
+    class_weight[LCD.IGNORED_CLASSES_IDX] = 0.
+    print(f"Will use class weights: {class_weight}")
+
     loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False)
     print("Compile model")
     model.compile(optimizer=optimizer,
