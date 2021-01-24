@@ -4,6 +4,7 @@ Predict the targets using a trained model.
 from pathlib import Path
 import argparse
 import yaml
+import random
 from tifffile import TiffFile
 import numpy as np
 import pandas as pd
@@ -109,6 +110,13 @@ if __name__ == '__main__':
     import multiprocessing
 
     config = _parse_args()
+    print(f'Config:\n{config}')
+    # set random seed for reproducibility
+    if config.seed is not None:
+        random.seed(config.seed)
+        np.random.seed(config.seed)
+        tf.random.set_seed(config.seed)
+
     N_CPUS = multiprocessing.cpu_count()
 
     print('Instanciate test dataset')

@@ -16,11 +16,6 @@ from framework.model import UNet
 from framework.tensorflow_utils import plot_predictions
 from framework.utils import YamlNamespace
 
-# random seed for reproducibility
-SEED = 42
-np.random.seed(SEED)
-random.seed(SEED)
-
 class PlotCallback(tf.keras.callbacks.Callback):
     """A callback used to display sample predictions during training."""
     from IPython.display import clear_output
@@ -106,7 +101,7 @@ if __name__ == '__main__':
         .map(parse_image, num_parallel_calls=N_CPUS)
 
     train_dataset = train_dataset.map(load_image_train, num_parallel_calls=N_CPUS)\
-        .shuffle(buffer_size=1024, seed=SEED)\
+        .shuffle(buffer_size=1024, seed=config.seed)\
         .repeat()\
         .batch(config.batch_size)\
         .prefetch(buffer_size=tf.data.experimental.AUTOTUNE)

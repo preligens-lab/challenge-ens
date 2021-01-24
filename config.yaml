@@ -4,6 +4,9 @@
 #
 
 training_config:
+  # the random seed, for reproducibility
+  # if null, no random seed
+  seed: 42
   # the size of each batch of images when training
   # careful not to use a too large batch size, might lead to OOM errors
   batch_size: 32
@@ -23,6 +26,9 @@ training_config:
 
 
 inference_config:
+  # the random seed, for reproducibility
+  # set to null for no random seed
+  seed: 42
   # the size of each batch of images when performing prediction
   batch_size: 32
   # the path to the root folder of the dataset
