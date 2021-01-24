@@ -12,11 +12,7 @@ from tqdm import tqdm
 import tensorflow as tf
 
 from framework.dataset import LandCoverData as LCD
-from framework.model import UNet
 from framework.utils import YamlNamespace
-
-# random seed for reproducibility
-SEED = 42
 
 def numpy_parse_image(image_path):
     """Load an image as numpy array
@@ -138,14 +134,9 @@ if __name__ == '__main__':
     testset_size = len(test_files)
 
     test_dataset = tf.data.Dataset.from_tensor_slices(list(map(str, test_files)))
-    # check samples are loaded in the right order
+    # assert that samples are loaded in the right order (not shuffled)
     # for idx, (f, tensor) in enumerate(zip(test_files, test_dataset)):
-    #     try:
-    #         assert f == str(bytes.decode(tensor.numpy()))
-    #     except AssertionError:
-    #         print(f)
-    #         print(str(bytes.decode(tensor.numpy())))
-    #         raise
+    #     assert f == str(bytes.decode(tensor.numpy()))
 
     test_dataset = test_dataset.map(parse_image, num_parallel_calls=N_CPUS)\
         .map(load_image_test, num_parallel_calls=N_CPUS)\
