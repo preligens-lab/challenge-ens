@@ -84,10 +84,6 @@ def predict_as_vectors(model, dataset, save_to=None):
 def _parse_args():
     parser = argparse.ArgumentParser('Inference script')
     parser.add_argument('--config', '-c', type=str, required=True, help="The YAML config file")
-    parser.add_argument('--xp-dir', '-x', type=str, required=True,
-                        help="The path to the log directory for an experiment."
-                             "If 'last' will use the lastly created directory under config.xp_rootdir"
-                        )
 
     cli_args = parser.parse_args()
     # parse the config file
@@ -95,16 +91,15 @@ def _parse_args():
         config = yaml.load(f, Loader=yaml.FullLoader)
     config = YamlNamespace(config)
     config = config.inference_config
-    config.xp_rootdir = Path(config.xp_rootdir).expanduser()
-    assert config.xp_rootdir.is_dir()
     config.dataset_folder = Path(config.dataset_folder).expanduser()
     assert config.dataset_folder.is_dir()
-    # special args
-    if cli_args.xp_dir == 'last':
+    config.xp_rootdir = Path(config.xp_rootdir).expanduser()
+    assert config.xp_rootdir.is_dir()
+    if config.xp_name == 'last':
         # get last xp directory name
-        cli_args.xp_dir = Path(max(str(d) for d in config.xp_rootdir.iterdir() if d.is_dir()))
+        config.xp_dir = Path(max(str(d) for d in config.xp_rootdir.iterdir() if d.is_dir()))
     else:
-        config.xp_dir = config.xp_rootdir/cli_args.xp_dir
+        config.xp_dir = config.xp_rootdir/config.xp_name
     assert config.xp_dir.is_dir()
     return config
 
@@ -135,10 +130,7 @@ if __name__ == '__main__':
         .prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 
     # Load the trained model saved to disk
-    try:
-        model = tf.keras.models.load_model(str(config.xp_dir/f'checkpoints/epoch{config.checkpoint_epoch}'))
-    except:
-        raise
+    model = tf.keras.models.load_model(str(config.xp_dir/f'checkpoints/epoch{config.checkpoint_epoch}'))
 
     print("Predict the vectors over the test dataset")
     y_pred_test = predict_as_vectors(model, test_dataset)
