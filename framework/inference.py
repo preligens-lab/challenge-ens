@@ -50,11 +50,12 @@ def load_image_test(input_image):
     return image
 
 
-def predict_as_vectors(model, dataset, save_to=None):
+def predict_as_vectors(model, dataset, steps=None):
     """Perform a forward pass over the dataset and bincount the prediction masks to return class vectors.
     Args:
         model (tf.keras.Model): model
-        test_dataset: (tf.data.Dataset): dataset to perform inference on
+        dataset (tf.data.Dataset): dataset to perform inference on
+        steps (int, optional): the total number of steps (batches) in the dataset, used for the progress bar
     Returns:
         (pandas.DataFrame): predicted class distribution vectors for the dataset
     """
@@ -66,7 +67,7 @@ def predict_as_vectors(model, dataset, save_to=None):
         return tf.math.count_nonzero(mask, axis=axis-1 if axis < 0 else axis)
 
     predictions = []
-    for batch in tqdm(dataset):
+    for batch in tqdm(dataset, total=steps):
         # predict a raster for each sample in the batch
         pred_raster = model.predict_on_batch(batch)
 
@@ -156,8 +157,7 @@ if __name__ == '__main__':
     model = tf.keras.models.load_model(str(config.xp_dir/f'checkpoints/epoch{config.checkpoint_epoch}'))
 
     print(f"Predict the vectors over the {config.set} dataset")
-    y_pred = predict_as_vectors(model, test_dataset)
-
+    y_pred = predict_as_vectors(model, test_dataset, steps=testset_size // config.batch_size)
 
     # get the samples ids
     ids_s = pd.Series([int(f.stem) for f in test_files], name='sample_id', dtype='uint32')
