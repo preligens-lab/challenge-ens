@@ -102,6 +102,8 @@ def _parse_args():
     else:
         config.xp_dir = config.xp_rootdir/config.xp_name
     assert config.xp_dir.is_dir()
+    assert config.set in ('train', 'test', 'val')
+
     return config
 
 
@@ -119,8 +121,21 @@ if __name__ == '__main__':
 
     N_CPUS = multiprocessing.cpu_count()
 
-    print('Instanciate test dataset')
-    test_files = sorted(config.dataset_folder.glob('test/images/*.tif'))
+    print(f"Instanciate {config.set} dataset")
+    if config.set == 'test':
+        test_files = sorted(config.dataset_folder.glob('test/images/*.tif'))
+    else:
+        val_samples_s = pd.read_csv(config.xp_dir/'val_samples.csv', squeeze=True)
+        val_files = [config.dataset_folder/'train/images/{}.tif'.format(i) for i in val_samples_s]
+        if config.set == 'train':
+            test_files = [
+                f for f in sorted(config.dataset_folder.glob('train/images/*.tif'))
+                if f not in set(val_files)
+            ]
+        else:
+            test_files = val_files
+    testset_size = len(test_files)
+
     test_dataset = tf.data.Dataset.from_tensor_slices(list(map(str, test_files)))
     # check samples are loaded in the right order
     # for idx, (f, tensor) in enumerate(zip(test_files, test_dataset)):
@@ -140,13 +155,15 @@ if __name__ == '__main__':
     # Load the trained model saved to disk
     model = tf.keras.models.load_model(str(config.xp_dir/f'checkpoints/epoch{config.checkpoint_epoch}'))
 
-    print("Predict the vectors over the test dataset")
-    y_pred_test = predict_as_vectors(model, test_dataset)
-    df_y_true_test = pd.read_csv(config.dataset_folder/'new_csvs/test_labels.csv', index_col=0)
-    df_y_pred_test = pd.DataFrame(y_pred_test, index=df_y_true_test.index, columns=df_y_true_test.columns)
-    out_csv = config.xp_dir/f'epoch{config.checkpoint_epoch}_test_predicted.csv'
-    print(f"Saving prediction CSV to file {str(out_csv)}")
-    df_y_pred_test.to_csv(out_csv, index=True, index_label='sample_id')
+    print(f"Predict the vectors over the {config.set} dataset")
+    y_pred = predict_as_vectors(model, test_dataset)
 
-    print(df_y_pred_test.shape, df_y_pred_test.values.dtype)
-    print(df_y_true_test.shape, df_y_true_test.values.dtype)
+
+    # get the samples ids
+    ids_s = pd.Series([int(f.stem) for f in test_files], name='sample_id', dtype='uint32')
+    df_y_pred = pd.DataFrame(
+        y_pred, index=ids_s, columns=LCD.CLASSES
+    )
+    out_csv = config.xp_dir/f'epoch{config.checkpoint_epoch}_{config.set}_predicted.csv'
+    print(f"Saving prediction CSV to file {str(out_csv)}")
+    df_y_pred.to_csv(out_csv, index=True, index_label='sample_id')
