@@ -120,14 +120,14 @@ if __name__ == '__main__':
     N_CPUS = multiprocessing.cpu_count()
 
     print('Instanciate test dataset')
-    test_filenames = sorted(config.dataset_folder.glob('test/imgs/*.tif'))
-    test_dataset = tf.data.Dataset.from_tensor_slices(list(map(str, test_filenames)))
+    test_files = sorted(config.dataset_folder.glob('test/images/*.tif'))
+    test_dataset = tf.data.Dataset.from_tensor_slices(list(map(str, test_files)))
     # check samples are loaded in the right order
-    # for idx, (filename, tensor) in enumerate(zip(test_filenames, test_dataset)):
+    # for idx, (f, tensor) in enumerate(zip(test_files, test_dataset)):
     #     try:
-    #         assert filename == str(bytes.decode(tensor.numpy()))
+    #         assert f == str(bytes.decode(tensor.numpy()))
     #     except AssertionError:
-    #         print(filename)
+    #         print(f)
     #         print(str(bytes.decode(tensor.numpy())))
     #         raise
 

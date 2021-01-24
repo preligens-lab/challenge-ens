@@ -76,7 +76,7 @@ if __name__ == '__main__':
     N_CPUS = multiprocessing.cpu_count()
 
     print('Instanciate train and validation datasets')
-    train_files = list(config.dataset_folder.glob('train/imgs/*.tif'))
+    train_files = list(config.dataset_folder.glob('train/images/*.tif'))
     # shuffle list of training samples files
     train_files = random.sample(train_files, len(train_files))
     devset_size = len(train_files)

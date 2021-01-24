@@ -76,7 +76,7 @@ def numpy_parse_image(image_path):
     """
     image_path = Path(bytes.decode(image_path))
     # get mask path from image path:
-    # image should be in a imgs/IMAGE_ID.tif subfolder, while the mask is at masks/IMAGE_ID.tif
+    # image should be in a images/<image_id>.tif subfolder, while the mask is at masks/<image_id>.tif
     mask_path = image_path.parent.parent/'masks'/image_path.name
     with TiffFile(image_path) as tifi, TiffFile(mask_path) as tifm:
         image = tifi.asarray()

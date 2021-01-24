@@ -15,7 +15,7 @@ training_config:
   # the learning rate
   lr: 0.001
   # the path to the root directory of the dataset
-  dataset_folder: '~/challenge-ens/data/v1_dataset'
+  dataset_folder: '~/challenge-ens/data/dataset_UNZIPPED'
   # the path to the root directory used to store experiments
   # a directory per experiment will be created named with the datetime during execution
   xp_rootdir: '~/challenge-ens/code/experiments'
@@ -32,7 +32,7 @@ inference_config:
   # the size of each batch of images when performing prediction
   batch_size: 32
   # the path to the root folder of the dataset
-  dataset_folder: '~/challenge-ens/data/v1_dataset'
+  dataset_folder: '~/challenge-ens/data/dataset_UNZIPPED'
   # the path to the root directory used to store experiments
   xp_rootdir: '~/challenge-ens/code/experiments'
   # the name of log directory for an experiment (result of training)
