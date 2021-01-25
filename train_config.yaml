@@ -10,7 +10,7 @@ seed: 42
 # careful not to use a too large batch size, might lead to OOM errors
 batch_size: 32
 # the number of epochs to train for
-epochs: 200
+epochs: 90
 # the learning rate
 lr: 0.001
 # the path to the root directory of the dataset
