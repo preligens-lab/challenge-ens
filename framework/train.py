@@ -119,8 +119,6 @@ if __name__ == '__main__':
     val_samples_s = pd.Series([int(f.stem) for f in val_files], name='sample_id', dtype='uint32')
     val_samples_s.to_csv(xp_dir/'val_samples.csv', index=False)
 
-    assert False
-
     # keep a training minibatch for visualization
     for image, mask in train_dataset.take(1):
         sample_batch = (image[:5, ...], mask[:5, ...])
