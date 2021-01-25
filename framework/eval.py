@@ -38,10 +38,11 @@ def _parse_args():
     parser = argparse.ArgumentParser('Evaluation script')
     parser.add_argument('--gt-file', '-g', type=str, help="ground truth CSV file")
     parser.add_argument('--pred-file', '-p', type=str, required=True, help="prediction CSV file")
+    parser.add_argument('--out-csv', '-o', type=str, default=None, help="output CSV file, optional")
     cli_args = parser.parse_args()
-    cli_args.gt_file = Path(cli_args.gt_file)
+    cli_args.gt_file = Path(cli_args.gt_file).resolve()
     assert cli_args.gt_file.is_file()
-    cli_args.pred_file = Path(cli_args.pred_file)
+    cli_args.pred_file = Path(cli_args.pred_file).resolve()
     assert cli_args.pred_file.is_file()
     return cli_args
 
@@ -74,3 +75,11 @@ if __name__ == '__main__':
 
     score = epsilon_kl_divergence(df_y_true, df_y_pred)
     print(f"Score (mean Kullback-Leibler divergence) = \n{score}")
+    if args.out_csv is not None:
+        print(f"Saving evaluation CSV to file {args.out_csv}")
+        df = pd.Series({
+            'gt_file':args.gt_file,
+            'pred_file':args.pred_file,
+            'score': score
+        }).to_frame().T
+        df.to_csv(args.out_csv, index=False)
