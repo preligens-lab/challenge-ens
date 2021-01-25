@@ -88,7 +88,6 @@ def _parse_args():
     with open(cli_args.config, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     config = YamlNamespace(config)
-    config = config.inference_config
     config.dataset_folder = Path(config.dataset_folder).expanduser()
     assert config.dataset_folder.is_dir()
     config.xp_rootdir = Path(config.xp_rootdir).expanduser()

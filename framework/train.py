@@ -50,7 +50,6 @@ def _parse_args():
     with open(cli_args.config, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     config = YamlNamespace(config)
-    config = config.training_config
     config.xp_rootdir = Path(config.xp_rootdir).expanduser()
     assert config.xp_rootdir.is_dir()
     config.dataset_folder = Path(config.dataset_folder).expanduser()

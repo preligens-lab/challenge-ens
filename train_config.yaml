@@ -1,0 +1,24 @@
+---
+#
+# YAML configuration file for train.py
+#
+
+# the random seed, for reproducibility
+# if null, no random seed
+seed: 42
+# the size of each batch of images when training
+# careful not to use a too large batch size, might lead to OOM errors
+batch_size: 32
+# the number of epochs to train for
+epochs: 200
+# the learning rate
+lr: 0.001
+# the path to the root directory of the dataset
+dataset_folder: '~/challenge-ens/data/dataset_UNZIPPED'
+# the path to the root directory used to store experiments
+# a directory per experiment will be created named with the datetime during execution
+xp_rootdir: '~/challenge-ens/code/experiments'
+# CSV file containing the samples to use in the validation set
+# if null, a random train/val split is performed, with 10% of the samples held out for validation
+# the validation samples will be saved to a file 'val_samples.csv' in the experiment directory
+val_samples_csv: null
