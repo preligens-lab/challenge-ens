@@ -6,6 +6,7 @@ import argparse
 import numpy as np
 import pandas as pd
 
+from framework.dataset import LandCoverData as LCD
 
 def epsilon_kl_divergence(y_true, y_pred):
     """
@@ -56,9 +57,10 @@ if __name__ == '__main__':
     # select subset of labels corresponding to predicted samples (train or val)
     df_y_true = df_y_true.loc[df_y_pred.index]
 
-    # remove ignored class columns "no_data" and "clouds" if present
-    df_y_pred = df_y_pred.drop(['no_data', 'clouds'], axis=1, errors='ignore')
-    df_y_true = df_y_true.drop(['no_data', 'clouds'], axis=1, errors='ignore')
+    # remove columns of the ignored classes if present
+    ignored_classes = [LCD.CLASSES[i] for i in LCD.IGNORED_CLASSES_IDX]
+    df_y_pred = df_y_pred.drop(ignored_classes, axis=1, errors='ignore')
+    df_y_true = df_y_true.drop(ignored_classes, axis=1, errors='ignore')
 
     # use same order for columns
     df_y_pred = df_y_pred.loc[:, df_y_true.columns]
