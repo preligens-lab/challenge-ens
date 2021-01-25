@@ -53,11 +53,12 @@ if __name__ == '__main__':
     df_y_true = pd.read_csv(args.gt_file, index_col=0, sep=',')
     df_y_pred = pd.read_csv(args.pred_file, index_col=0, sep=',')
 
-    if not len(df_y_true.index.intersection(df_y_pred.index)) == len(df_y_true.index):
-        raise ValueError("indexes are not equal")
+    if not len(df_y_true.index.intersection(df_y_pred.index)) == len(df_y_pred.index):
+        raise ValueError("some samples IDs in y_pred are not present in y_true")
 
-    # use same order for rows
-    df_y_pred = df_y_pred.loc[df_y_true.index]
+    # select subset of labels corresponding to predicted samples (train or val)
+    df_y_true = df_y_true.loc[df_y_pred.index]
+
     # remove ignored class columns "no_data" and "clouds" if present
     df_y_pred = df_y_pred.drop(['no_data', 'clouds'], axis=1, errors='ignore')
     df_y_true = df_y_true.drop(['no_data', 'clouds'], axis=1, errors='ignore')
@@ -65,9 +66,8 @@ if __name__ == '__main__':
     # use same order for columns
     df_y_pred = df_y_pred.loc[:, df_y_true.columns]
 
-    if not df_y_pred.shape == df_y_true.shape == (LCD.TESTSET_SIZE, LCD.N_CLASSES-2):
-        # @ TODO
-        raise ValueError(f"shapes not equal to : {LCD.TESTSET_SIZE, LCD.N_CLASSES-2}")
+    if not df_y_pred.shape == df_y_true.shape:
+        raise ValueError(f"shapes not equal between y_true and y_pred")
 
     if np.any(np.allclose(df_y_pred.sum(1), 0.)):
         # if any row predicted sums to 0, raise an error
