@@ -1,6 +1,6 @@
 # ENS Challenge Data 2021 : Land cover predictive modeling from satellite images
 
-This repository stores the code for the benchmark model of the Challenge Data competition ["Land cover predictive modeling from satellite images"](https://challengedata.ens.fr/challenges/48).
+This repository stores the code for the benchmark model of the Challenge Data competition [“Land cover predictive modeling from satellite images”](https://challengedata.ens.fr/challenges/48) provided by Preligens.
 The proposed benchmark model is a deep neural network trained on the “proxy” task of semantic segmentation of the land cover labels at the pixel level. The network has a U-Net architecture ([Ronneberger et al 2015](https://arxiv.org/abs/1505.04597)).
 
 ## Data folder
@@ -37,13 +37,13 @@ Every sample has an identifier used in the CSVs in a column named `sample_id`.
 
 ## Python environment
 
-The file `environment.yaml` is an exported conda environment with all the dependencies for this project: you can recreate the environment with the command `conda env create -f environment.yaml`. You first need to install miniconda if you don't have it installed already: go to [this link](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) to find instructions for your operating system.
+The file `environment.yml` is an exported conda environment with all the dependencies for this project: you can recreate the environment with the command `conda env create -f environment.yml`. You first need to install miniconda if you don't have it installed already: go to [this link](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) to find instructions for your operating system.
 
 ## Code usage
 
 The notebook `data_visualization.ipynb` can be used to visualize a few data points, as well as the class distribution in the training set. Notably you'll see how to load the images and masks using `tifffile`.
 
-The `framework` module contains scripts to train the model, then use the trained model to perform predictions over the testing set, and finally evaluate those predictions against corresponding ground truth labels.
+The `framework` package contains scripts to train the model, then use the trained model to perform predictions over the testing set, and finally evaluate those predictions against corresponding ground truth labels.
 
 ### Train
 
@@ -56,12 +56,12 @@ The input is a YAML configuration file. See `train_config.yaml` for an example f
 The experiment is saved in a folder with a structure like this :
 ```
 experiments
-├── 25-11-2020_20:40:43
-│   ├── checkpoints
-│   ├── plots
-|   ├── fit_logs.csv
-|   ├── tensorboard
-│   └── val_samples.csv
+└── 25-11-2020_20:40:43
+    ├── checkpoints
+    ├── plots
+    ├── fit_logs.csv
+    ├── tensorboard
+    └── val_samples.csv
 ```
 Here, `experiments` is the root folder referenced by `xp_rootdir` in `config.yaml`. In the root folder, a directory for the experiment is created with name being the datetime of execution (here: `25-11-2020_20:40:43`). Inside, `checkpoints` contains snapshots of the model, saved after every epoch. `plots` contains the figures of predictions of the model after every epoch for a few train samples: it helps to qualitatively judge the progress of the training. The file `fit_logs.csv` contains logs of the training with loss and validation loss for every epoch. The file `val_samples.csv` contains the samples kept in validation during the training (the weights of the model are not optimized on those samples).
 
@@ -98,11 +98,11 @@ ipython framework/eval.py -- --gt-file ../data/dataset_csvs/train_labels.csv --p
 U-Net is composed of a contractive path and expansive path. The contractive path diminishes the spatial resolution by the repeated application of (3,3) convolutions and (2,2) max pooling with a stride of 2. Every step in the expansive path consists in (2,2) transposed convolutions that expand the spatial resolution, a concatenation with the feature map in correspondence in the contractive path, followed by (3,3) convolutions. At the last layer, that has the same resolution as the input, a (1,1) convolution is used to associate the feature map vector for every pixel to the number of classes.
 The benchmark model is a relatively small network made of 984,234 trainable parameters. The total number of convolution layers is 21, made of 64 feature maps in the contractive path, and 64 or 96 feature maps in the expansive path. We kept the number of feature maps low to be able to have this much layers while keeping the number of weights small. See `framework/model.py:UNet` for the exact definition of the model in Keras code.
 
-The loss function used is a regular cross-entropy, with weights assigned to every class. The weight for a class is set to be the inverse of the frequency of this class in the training set. The special classes “no_data” and “clouds” need to be ignored have their weights set to zero to avoid learning to predict them.
+The loss function used is a regular cross-entropy, with weights assigned to every class. The weight for a class is set to be the inverse of the frequency of this class in the training set. The special classes “no_data” and “clouds” that need to be ignored have their weights set to zero to avoid learning to predict them.
 
 As data augmentations during training, we used basic flips and rotations (90°, 270°).
 The model was trained for 90 epochs which took about 6 hours on a Nvidia Tesla P100-PCIE-16GB.
-To select a snapshot for predicting the class distribution vectors on the testing set, we selected the one which is optimal for validation loss (the 86th epoch).
+To choose a snapshot for predicting the class distribution vectors on the testing set, we selected the one which is optimal for validation loss (the 86th epoch).
 
 Note: the learning rate used is 0.001 and it wasn't tuned at all. The batch size is 32.
 
