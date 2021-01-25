@@ -45,8 +45,6 @@ The notebook `data_visualization.ipynb` can be used to visualize a few data poin
 
 The `framework` module contains scripts to train the model, then use the trained model to perform predictions over the testing set, and finally evaluate those predictions against corresponding ground truth labels.
 
-The file `config.yaml` defines all the parameters that are used by the training and prediction script and can be modified.
-
 ### Train
 
 To train the U-Net model on the training set for a certain number of epochs, use `framework/train.py` :
@@ -85,25 +83,27 @@ Examples:
 * Evaluate on training set:
 
 ```
-ipython framework/eval.py -- --gt-file ../data/dataset_csvs/train_labels.csv -p experiments/25-11-2020_20:40:43/epoch84_train_predicted.csv -o experiments/25-11-2020_20:40:43/epoch84_train_predicted_score.csv
+ipython framework/eval.py -- --gt-file ../data/dataset_csvs/train_labels.csv --pred-file experiments/25-11-2020_20:40:43/epoch84_train_predicted.csv --out-csv experiments/25-11-2020_20:40:43/epoch84_train_predicted_score.csv
 ```
+where ../data/dataset_csvs/train_labels.csv is where is stored the *y_train* file of the challenge.
+
 * Evaluate on validation set:
 ```
-ipython framework/eval.py -- --gt-file ../data/dataset_csvs/train_labels.csv -p experiments/25-11-2020_20:40:43/epoch84_val_predicted.csv -o experiments/25-11-2020_20:40:43/epoch84_val_predicted_score.csv
+ipython framework/eval.py -- --gt-file ../data/dataset_csvs/train_labels.csv --pred-file experiments/25-11-2020_20:40:43/epoch84_val_predicted.csv --out-csv experiments/25-11-2020_20:40:43/epoch84_val_predicted_score.csv
 ```
+
 
 ## Model information
 
-
-U-Net is composed of a contrastive path and expansive path. The contrastive path diminishes the spatial resolution by the repeated application of (3,3) convolutions and (2,2) max pooling with a stride of 2. Every step in the expansive path consists in (2,2) transposed convolutions that expand the spatial resolution, a concatenation with the feature map in correspondence in the contrastive path, followed by (3,3) convolutions. At the last layer, that has the same resolution as the input, a (1,1) convolution is used to associate the feature map vector for every pixel to the number of classes.
-The benchmark model is a relatively small network made of 984,234 trainable parameters. The total number of convolution layers is 21, made of 64 to 128 feature maps at max. We kept the number of feature maps low to be able to have as much layers while keeping the number of weights small.
+U-Net is composed of a contractive path and expansive path. The contractive path diminishes the spatial resolution by the repeated application of (3,3) convolutions and (2,2) max pooling with a stride of 2. Every step in the expansive path consists in (2,2) transposed convolutions that expand the spatial resolution, a concatenation with the feature map in correspondence in the contractive path, followed by (3,3) convolutions. At the last layer, that has the same resolution as the input, a (1,1) convolution is used to associate the feature map vector for every pixel to the number of classes.
+The benchmark model is a relatively small network made of 984,234 trainable parameters. The total number of convolution layers is 21, made of 64 feature maps in the contractive path, and 64 or 96 feature maps in the expansive path. We kept the number of feature maps low to be able to have this much layers while keeping the number of weights small. See `framework/model.py:UNet` for the exact definition of the model in Keras code.
 
 The loss function used is a regular cross-entropy, with weights assigned to every class. The weight for a class is set to be the inverse of the frequency of this class in the training set. The special classes “no_data” and “clouds” need to be ignored have their weights set to zero to avoid learning to predict them.
 
 As data augmentations during training, we used basic flips and rotations (90°, 270°).
-The model was trained for 90 epochs which took about 6 hours on a Nvidia Tesla P100.
+The model was trained for 90 epochs which took about 6 hours on a Nvidia Tesla P100-PCIE-16GB.
 To select a snapshot for predicting the class distribution vectors on the testing set, we selected the one which is optimal for validation loss (the 86th epoch).
 
 Note: the learning rate used is 0.001 and it wasn't tuned at all. The batch size is 32.
 
-The architecture used was inspired by [DeepSense.AI Kaggle DSTL competition entry](https://deepsense.ai/deep-learning-for-satellite-imagery-via-image-segmentation/). Refer to the “Model” section of the article and see [their model's figure](https://cdn-sv1.deepsense.ai/wp-content/uploads/2017/04/architecture_details.png), ours is very similar.
+The architecture used is inspired by [DeepSense.AI Kaggle DSTL competition entry](https://deepsense.ai/deep-learning-for-satellite-imagery-via-image-segmentation/). Refer to the “Model” section of the article and see [their model's figure](https://cdn-sv1.deepsense.ai/wp-content/uploads/2017/04/architecture_details.png), ours is very similar.
