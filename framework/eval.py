@@ -6,8 +6,6 @@ import argparse
 import numpy as np
 import pandas as pd
 
-from framework.dataset import LandCoverData as LCD
-
 
 def epsilon_kl_divergence(y_true, y_pred):
     """
@@ -37,9 +35,8 @@ def epsilon_kl_divergence(y_true, y_pred):
 
 def _parse_args():
     parser = argparse.ArgumentParser('Evaluation script')
-    parser.add_argument('--gt-file', '-g', type=str, help="Ground truth CSV file")
-    parser.add_argument('--pred-file', '-p', type=str, required=True, help="Prediction CSV file")
-
+    parser.add_argument('--gt-file', '-g', type=str, help="ground truth CSV file")
+    parser.add_argument('--pred-file', '-p', type=str, required=True, help="prediction CSV file")
     cli_args = parser.parse_args()
     cli_args.gt_file = Path(cli_args.gt_file)
     assert cli_args.gt_file.is_file()
@@ -74,4 +71,4 @@ if __name__ == '__main__':
         raise ValueError("some row vector(s) in y_pred sum to 0")
 
     score = epsilon_kl_divergence(df_y_true, df_y_pred)
-    print(f"(ε)KL divergence =  {score}")
+    print(f"Score (mean Kullback-Leibler divergence) = \n{score}")
